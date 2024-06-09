@@ -1,0 +1,3 @@
+interface IExecutable {
+  execute: () => void;
+}
