@@ -1,3 +1,3 @@
-interface IExecutable {
+export interface IExecutable {
   execute: () => void;
 }

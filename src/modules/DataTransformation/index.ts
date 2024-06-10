@@ -1,3 +1,5 @@
+import { IExecutable } from "../../types/executable";
+
 interface IDataTransformation {}
 
 class DataTransformation implements IExecutable, IDataTransformation {
