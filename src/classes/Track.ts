@@ -9,7 +9,7 @@ export default class Track implements IParsable {
   artists: string[];
   id_artists: string[];
   release_date: string;
-  danceability: number;
+  danceability: number | string;
   energy: number;
 
   constructor();
@@ -35,7 +35,7 @@ export default class Track implements IParsable {
     artists?: string[],
     id_artists?: string[],
     release_date?: string,
-    danceability?: number,
+    danceability?: number | string,
     energy?: number
   ) {
     this.id = id || "0";
