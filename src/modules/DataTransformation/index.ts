@@ -6,6 +6,7 @@ import Track from "../../classes/Track";
 import TrackDanceabilityTransformation from "./transformations/TrackDanceabilityTransformation";
 import ExplodeTrackReleaseDate from "./explosions/ExplodeTrackReleaseDate";
 import FileHeaders from "../../config/FileHeaders";
+import Artist from "../../classes/Artist";
 
 interface IDataTransformation {}
 
@@ -91,6 +92,62 @@ class DataTransformation implements IExecutable, IDataTransformation {
           } catch (err) {
             console.log(`Error parsing line ${lineCount} ${err}`);
           }
+        })
+        .on("close", () => {
+          resolve("ok");
+        });
+    });
+  }
+
+  protected async filterArtists() {
+    console.log("filtering artists");
+    const artistsFile: readline.Interface = readline.createInterface({
+      input: fs.createReadStream(this.artistsFilePath),
+      output: process.stdout,
+      terminal: false,
+    });
+
+    const out: fs.WriteStream = fs.createWriteStream(this.artistsFileOutPath);
+
+    let lineCount = 0;
+
+    await new Promise((resolve, reject) => {
+      artistsFile
+        .on("line", async (line: string) => {
+          const artist: Artist = new Artist();
+          lineCount++;
+          try {
+            artist.parse(line);
+
+            let numberOfArtistTracks = 0;
+            const tracksFile: readline.Interface = readline.createInterface({
+              input: fs.createReadStream(this.trackFileOutPath),
+              output: process.stdout,
+              terminal: false,
+            });
+
+            await new Promise((resolve, reject) => {
+              tracksFile
+                .on("line", (line: string) => {
+                  const track: Track = new Track();
+
+                  try {
+                    track.parse(line);
+
+                    if (track.artists.includes(artist.name)) {
+                      numberOfArtistTracks++;
+                    }
+                  } catch (err) {}
+                })
+                .on("close", () => {
+                  resolve("ok");
+                });
+            });
+
+            if (numberOfArtistTracks > 0) {
+              out.write(line + "\r\n");
+            }
+          } catch (err) {}
         })
         .on("close", () => {
           resolve("ok");
