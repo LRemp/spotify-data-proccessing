@@ -39,4 +39,8 @@ export default class Artist implements IParsable {
     this.name = parts[3];
     this.popularity = parseInt(parts[4]);
   }
+
+  public toString() {
+    return "";
+  }
 }
