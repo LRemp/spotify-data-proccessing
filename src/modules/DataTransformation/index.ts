@@ -51,6 +51,9 @@ class DataTransformation implements IExecutable, IDataTransformation {
     //Filter the tracks
     await this.filterTracks();
 
+    //Filter the artists
+    await this.filterArtists();
+
     //Upload the generated files
     await this.storage.upload(
       fs.createReadStream(this.trackFileOutPath),
@@ -116,59 +119,50 @@ class DataTransformation implements IExecutable, IDataTransformation {
   }
 
   protected async filterArtists() {
-    console.log("filtering artists");
-    const artistsFile: readline.Interface = readline.createInterface({
+    const out: fs.WriteStream = fs.createWriteStream(this.artistsFileOutPath);
+
+    const tracksFile: readline.Interface = readline.createInterface({
+      input: fs.createReadStream(this.trackFileOutPath),
+      output: process.stdout,
+      terminal: false,
+    });
+
+    const tracks: Track[] = [];
+
+    for await (const line of tracksFile) {
+      const track: Track = new Track();
+      try {
+        track.parse(line);
+        tracks.push(track);
+      } catch (err) {}
+    }
+
+    const artistsFile = readline.createInterface({
       input: fs.createReadStream(this.artistsFilePath),
       output: process.stdout,
       terminal: false,
     });
 
-    const out: fs.WriteStream = fs.createWriteStream(this.artistsFileOutPath);
-
     let lineCount = 0;
+    for await (const line of artistsFile) {
+      const artist: Artist = new Artist();
+      lineCount++;
+      try {
+        artist.parse(line);
 
-    await new Promise((resolve, reject) => {
-      artistsFile
-        .on("line", async (line: string) => {
-          const artist: Artist = new Artist();
-          lineCount++;
-          try {
-            artist.parse(line);
+        let numberOfArtistTracks = 0;
 
-            let numberOfArtistTracks = 0;
-            const tracksFile: readline.Interface = readline.createInterface({
-              input: fs.createReadStream(this.trackFileOutPath),
-              output: process.stdout,
-              terminal: false,
-            });
+        for (var id in tracks) {
+          if (tracks[id].artists.includes(artist.name)) {
+            numberOfArtistTracks++;
+          }
+        }
 
-            await new Promise((resolve, reject) => {
-              tracksFile
-                .on("line", (line: string) => {
-                  const track: Track = new Track();
-
-                  try {
-                    track.parse(line);
-
-                    if (track.artists.includes(artist.name)) {
-                      numberOfArtistTracks++;
-                    }
-                  } catch (err) {}
-                })
-                .on("close", () => {
-                  resolve("ok");
-                });
-            });
-
-            if (numberOfArtistTracks > 0) {
-              out.write(line + "\r\n");
-            }
-          } catch (err) {}
-        })
-        .on("close", () => {
-          resolve("ok");
-        });
-    });
+        if (numberOfArtistTracks > 0) {
+          out.write(line + "\r\n");
+        }
+      } catch (err) {}
+    }
   }
 }
 
