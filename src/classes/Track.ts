@@ -8,9 +8,12 @@ export default class Track implements IParsable {
   explicit: number;
   artists: string[];
   id_artists: string[];
-  release_date: string;
+  release_date: Date;
   danceability: number | string;
   energy: number;
+  year?: number;
+  month?: number;
+  day?: number;
 
   constructor();
   constructor(
@@ -21,7 +24,7 @@ export default class Track implements IParsable {
     explicit: number,
     artists: string[],
     id_artists: string[],
-    release_date: string,
+    release_date: Date,
     danceability: number,
     energy: number
   );
@@ -34,7 +37,7 @@ export default class Track implements IParsable {
     explicit?: number,
     artists?: string[],
     id_artists?: string[],
-    release_date?: string,
+    release_date?: Date,
     danceability?: number | string,
     energy?: number
   ) {
@@ -45,7 +48,7 @@ export default class Track implements IParsable {
     this.explicit = explicit || 0;
     this.artists = artists || [];
     this.id_artists = id_artists || [];
-    this.release_date = release_date || "";
+    this.release_date = release_date || new Date();
     this.danceability = danceability || 0;
     this.energy = energy || 0;
   }
@@ -71,8 +74,37 @@ export default class Track implements IParsable {
         .replace(/^"+|"+$/g, "")
         .replace(/'/g, '"')
     );
-    this.release_date = parts[7];
+    this.release_date = new Date(parts[7]);
     this.danceability = parseFloat(parts[8]);
     this.energy = parseInt(parts[9]);
+
+    if (parts.length > 10) {
+      this.year = parseInt(parts[10]);
+      this.month = parseInt(parts[11]);
+      this.day = parseInt(parts[12]);
+    }
+  }
+
+  public toString(): string {
+    let result = "";
+
+    result += `${this.id},`;
+    result += `${this.name},`;
+    result += `${this.popularity},`;
+    result += `${this.duration_ms},`;
+    result += `${this.explicit},`;
+    result += `${JSON.stringify(this.artists)},`;
+    result += `${JSON.stringify(this.id_artists)},`;
+    result += `${this.release_date.getFullYear()}-${
+      this.release_date.getMonth() + 1
+    }-${this.release_date.getDate() + 1},`;
+    result += `${this.danceability},`;
+    result += `${this.energy}`;
+
+    if (this.year) {
+      result += `,${this.year},${this.month},${this.day}`;
+    }
+
+    return result;
   }
 }
