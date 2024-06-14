@@ -19,3 +19,21 @@ The task is divided in three main parts:
 2. Open console in the root folder using Command Prompt, Terminal or any other simillar tool.
 3. Execute command: `npm run local`
 4. Results should be generated in `data/filtered` and errors presented in the console
+
+## What needs to be done
+
+- Unit testing for the main program(using Jest):
+  - Covering data types to ensure integrity of the data
+  - Cover transformations and explode operations to ensure the integrity of data after applied transformations.
+- Improved error handling:
+  - Some of the data fields might have incorrect format but contain usable data.
+  - Add logger to categorize logs and write to log file.
+- PostgreSQL views to query and select data based on the criterias.
+
+## Notes
+
+During the task solution development I did notice that multithreading is a must, due to large datasets used in this project, using synchronous reading it will take a lot of time to process time and using multiple workers would increase work time dramatically(this needs to be implemented).
+
+Some of the example dataset fields were in the incorrect formatting but contained usable information(this could be also tackled).
+
+The project structure was successfuly created and defines a scalable structure for further development by other people.
