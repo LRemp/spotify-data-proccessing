@@ -32,7 +32,7 @@ The task is divided in three main parts:
 
 ## Notes
 
-During the task solution development I did notice that multithreading is a must, due to large datasets used in this project, using synchronous reading it will take a lot of time to process time and using multiple workers would increase work time dramatically(this needs to be implemented).
+During the task solution development I did notice that multithreading is a must, due to large datasets used in this project, using synchronous reading it will take a lot of time to process everything and using multiple workers would increase work time dramatically(this needs to be implemented).
 
 Some of the example dataset fields were in the incorrect formatting but contained usable information(this could be also tackled).
 
