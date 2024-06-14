@@ -1,8 +1,8 @@
 import Track from "../../../classes/Track";
 
-export default function TrackDanceabilityTransformation(data: Track): Track {
+export default function TrackDanceabilityTransformation(data: Track) {
   //Terminate action if danceability of the track is a type of string
-  if (typeof data.danceability == "string") return data;
+  if (typeof data.danceability == "string") return;
 
   //Asign required string value based on number criteria
   if (data.danceability >= 0 && data.danceability < 0.5) {
@@ -12,6 +12,4 @@ export default function TrackDanceabilityTransformation(data: Track): Track {
   } else {
     data.danceability = "High";
   }
-
-  return data;
 }
