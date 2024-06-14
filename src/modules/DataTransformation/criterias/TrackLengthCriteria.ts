@@ -1,5 +1,5 @@
-import Track from "../../../classes/Track";
-import { ICriteria } from "../../../types/criteria";
+import Track from "@classes/data/Track";
+import { ICriteria } from "@/types/criteria";
 
 const minuteMiliseconds = 60 * 10;
 

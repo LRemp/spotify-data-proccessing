@@ -1,5 +1,5 @@
-import Track from "../../../classes/Track";
-import { IQualifier } from "../../../types/qualifier";
+import Track from "@classes/data/Track";
+import { IQualifier } from "@/types/qualifier";
 import TrackLengthCriteria from "../criterias/TrackLengthCriteria";
 import TrackNameCriteria from "../criterias/TrackNameCriteria";
 

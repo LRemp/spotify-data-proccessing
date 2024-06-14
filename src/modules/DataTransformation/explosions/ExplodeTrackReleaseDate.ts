@@ -1,4 +1,4 @@
-import Track from "../../../classes/Track";
+import Track from "@classes/data/Track";
 
 export default function ExplodeTrackReleaseDate(data: Track) {
   data.year = data.release_date.getFullYear();

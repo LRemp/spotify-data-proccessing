@@ -1,4 +1,4 @@
-import { IParsable } from "../types/parasble";
+import { IParsable } from "@/types/parasble";
 
 export default class Artist implements IParsable {
   id: string;

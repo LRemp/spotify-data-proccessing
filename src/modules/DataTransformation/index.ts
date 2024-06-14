@@ -1,12 +1,12 @@
-import { IExecutable } from "../../types/executable";
+import { IExecutable } from "@/types/executable";
 import * as fs from "fs";
 import * as readline from "readline";
 import TrackLengthAndNameQualifier from "./qualifiers/TrackLengthAndNameQualifier";
-import Track from "../../classes/Track";
+import Track from "@classes/data/Track";
 import TrackDanceabilityTransformation from "./transformations/TrackDanceabilityTransformation";
 import ExplodeTrackReleaseDate from "./explosions/ExplodeTrackReleaseDate";
-import FileHeaders from "../../config/FileHeaders";
-import Artist from "../../classes/Artist";
+import FileHeaders from "@config/FileHeaders";
+import Artist from "@classes/data/Artist";
 
 interface IDataTransformation {}
 

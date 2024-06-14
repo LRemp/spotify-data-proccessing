@@ -1,4 +1,4 @@
-import Track from "../../../classes/Track";
+import Track from "@classes/data/Track";
 
 export default function TrackDanceabilityTransformation(data: Track) {
   //Terminate action if danceability of the track is a type of string
