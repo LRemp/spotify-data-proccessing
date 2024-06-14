@@ -3,6 +3,9 @@ import * as fs from "fs";
 import * as readline from "readline";
 import TrackLengthAndNameQualifier from "./qualifiers/TrackLengthAndNameQualifier";
 import Track from "../../classes/Track";
+import TrackDanceabilityTransformation from "./transformations/TrackDanceabilityTransformation";
+import ExplodeTrackReleaseDate from "./explosions/ExplodeTrackReleaseDate";
+import FileHeaders from "../../config/FileHeaders";
 
 interface IDataTransformation {}
 
@@ -37,18 +40,13 @@ class DataTransformation implements IExecutable, IDataTransformation {
     this.qualifier = new TrackLengthAndNameQualifier();
   }
 
-  public execute() {
+  public async execute() {
     //Filter the tracks
-    this.filterTracks();
-
-    //TODO: filter the artists
-
-    //TODO: explode track release date
-
-    //TODO: transform tracks data
+    await this.filterTracks();
   }
 
   protected async filterTracks() {
+    console.log("filtering tracks");
     const file: readline.Interface = readline.createInterface({
       input: fs.createReadStream(this.trackFilePath),
       output: process.stdout,
@@ -71,17 +69,32 @@ class DataTransformation implements IExecutable, IDataTransformation {
 
     let lineCount = 0;
 
-    file.on("line", (line: string) => {
-      const track: Track = new Track();
-      lineCount++;
-      try {
-        track.parse(line);
-        if (this.qualifier.qualifies(track)) {
-          out.write(line + "\r\n");
-        }
-      } catch (err) {
-        console.log(`Error parsing line ${lineCount} ${err}`);
-      }
+    out.write(FileHeaders.trackTransformedFileHeader);
+
+    await new Promise((resolve, reject) => {
+      file
+        .on("line", (line: string) => {
+          const track: Track = new Track();
+          lineCount++;
+          try {
+            track.parse(line);
+
+            if (this.qualifier.qualifies(track)) {
+              //Apply data transformations
+              TrackDanceabilityTransformation(track);
+
+              //Explode required fields for data
+              ExplodeTrackReleaseDate(track);
+
+              out.write(track.toString() + "\r\n");
+            }
+          } catch (err) {
+            console.log(`Error parsing line ${lineCount} ${err}`);
+          }
+        })
+        .on("close", () => {
+          resolve("ok");
+        });
     });
   }
 }
