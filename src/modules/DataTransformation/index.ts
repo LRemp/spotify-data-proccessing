@@ -7,6 +7,9 @@ import TrackDanceabilityTransformation from "./transformations/TrackDanceability
 import ExplodeTrackReleaseDate from "./explosions/ExplodeTrackReleaseDate";
 import FileHeaders from "@config/FileHeaders";
 import Artist from "@classes/data/Artist";
+import { IStorage } from "@/types/storage";
+import S3Storage from "@classes/storage/S3Storage";
+import { IQualifier } from "@/types/qualifier";
 
 interface IDataTransformation {}
 
@@ -16,7 +19,9 @@ class DataTransformation implements IExecutable, IDataTransformation {
   trackFileOutPath: string;
   artistsFileOutPath: string;
 
-  qualifier: TrackLengthAndNameQualifier;
+  qualifier: IQualifier<Track>;
+
+  storage: IStorage;
 
   constructor();
   constructor(
@@ -39,11 +44,22 @@ class DataTransformation implements IExecutable, IDataTransformation {
       artistsFileOutPath || "./data/filtered/artists.csv";
 
     this.qualifier = new TrackLengthAndNameQualifier();
+    this.storage = new S3Storage();
   }
 
   public async execute() {
     //Filter the tracks
     await this.filterTracks();
+
+    //Upload the generated files
+    await this.storage.upload(
+      fs.createReadStream(this.trackFileOutPath),
+      "tracks.csv"
+    );
+    await this.storage.upload(
+      fs.createReadStream(this.artistsFileOutPath),
+      "artists.csv"
+    );
   }
 
   protected async filterTracks() {
